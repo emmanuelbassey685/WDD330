@@ -8,8 +8,8 @@ const element = document.querySelector(".product-list");
 
 const productList = new ProductList("Tents", dataSource, element);
 
-productList.init();
-
 const alerts = new Alert("/json/alerts.json");
+
+productList.init();
 
 alerts.init();

@@ -18,3 +18,4 @@ product.init();
 // document
 //   .getElementById("addToCart")
 //   .addEventListener("click", addToCartHandler);
+// // add listener to Add to Cart button
