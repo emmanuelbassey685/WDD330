@@ -241,6 +241,15 @@ button {
   grid-column: 3;
 }
 
+.alert-list {
+  width: 100%;
+}
+
+.alert-list p {
+  text-align: center;
+  font-weight: bold;
+}
+
 @media screen and (min-width: 500px) {
   body {
     max-width: 1080px;
