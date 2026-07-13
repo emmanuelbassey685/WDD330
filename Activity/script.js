@@ -9,41 +9,38 @@ let isPaused = false;
 
 // Start button
 startButton.addEventListener("click", () => {
+  // Prevent multiple timers
+  if (intervalId !== null) return;
 
-    // Prevent multiple timers
-    if (intervalId !== null) return;
+  // Use custom input if provided
+  if (timeInput.value !== "") {
+    timeLeft = parseInt(timeInput.value);
+  }
 
-    // Use custom input if provided
-    if (timeInput.value !== "") {
-        timeLeft = parseInt(timeInput.value);
+  countdownDisplay.textContent = timeLeft;
+
+  intervalId = setInterval(() => {
+    if (!isPaused) {
+      timeLeft--;
+      countdownDisplay.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        // Stop countdown using setTimeout
+        setTimeout(() => {
+          clearInterval(intervalId);
+          intervalId = null;
+          countdownDisplay.textContent = "Time's up!";
+        }, 0);
+      }
     }
-
-    countdownDisplay.textContent = timeLeft;
-
-    intervalId = setInterval(() => {
-        if (!isPaused) {
-            timeLeft--;
-            countdownDisplay.textContent = timeLeft;
-
-            if (timeLeft <= 0) {
-
-                // Stop countdown using setTimeout
-                setTimeout(() => {
-                    clearInterval(intervalId);
-                    intervalId = null;
-                    countdownDisplay.textContent = "Time's up!";
-                }, 0);
-            }
-        }
-    }, 1000);
+  }, 1000);
 });
 
 // Pause/Resume button
 pauseButton.addEventListener("click", () => {
+  if (intervalId === null) return;
 
-    if (intervalId === null) return;
+  isPaused = !isPaused;
 
-    isPaused = !isPaused;
-
-    pauseButton.textContent = isPaused ? "Resume" : "Pause";
+  pauseButton.textContent = isPaused ? "Resume" : "Pause";
 });

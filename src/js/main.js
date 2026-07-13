@@ -10,7 +10,6 @@ const productList = new ProductList("Tents", dataSource, element);
 
 productList.init();
 
-
 const alerts = new Alert("/json/alerts.json");
 
 alerts.init();
