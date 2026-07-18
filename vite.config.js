@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   root: "src/",
+  base: "/", // 👈 Ensures assets load from the root domain across all subpages
 
   build: {
     outDir: "../dist",
