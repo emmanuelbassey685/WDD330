@@ -388,6 +388,34 @@ button {
   transform: translateY(-5px);
 }
 
+/* ===============================
+   Discount Badge
+================================ */
+
+.discount-badge {
+  display: inline-block;
+  background: #d62828;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: .9rem;
+  font-weight: bold;
+  margin: .5rem 0;
+}
+
+.original-price {
+  color: #777;
+  text-decoration: line-through;
+  margin: .4rem 0;
+  font-size: 1rem;
+}
+
+.product-card__price {
+  color: #d62828;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
 @media (max-width: 768px) {
   .categories {
     grid-template-columns: repeat(2, 1fr);
