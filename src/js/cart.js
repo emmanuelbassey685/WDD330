@@ -1,7 +1,12 @@
+import { loadHeaderFooter } from "./utils.mjs";
 import ShoppingCart from "./ShoppingCart.mjs";
 
-const cart = new ShoppingCart(
-  document.querySelector(".product-list")
-);
+async function init() {
+  await loadHeaderFooter();
 
-cart.init();
+  const cart = new ShoppingCart(".product-list");
+
+  cart.init();
+}
+
+init();
