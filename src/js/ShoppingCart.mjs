@@ -1,8 +1,4 @@
-import {
-  getLocalStorage,
-  setLocalStorage,
-  renderListWithTemplate,
-} from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, renderListWithTemplate, } from "./utils.mjs";
 
 function cartItemTemplate(item) {
   return `
@@ -15,7 +11,7 @@ function cartItemTemplate(item) {
       </button>
 
       <a href="#" class="cart-card__image">
-        <img src="${item.Image}" alt="${item.Name}">
+        <img src="${item.Images.PrimaryMedium}" alt="${item.Name}">
       </a>
 
       <a href="#">
@@ -23,7 +19,7 @@ function cartItemTemplate(item) {
       </a>
 
       <p class="cart-card__color">
-        ${item.Colors[0].ColorName}
+        ${item.Colors?.[0]?.ColorName ?? ""}
       </p>
 
       <p class="cart-card__quantity">
@@ -31,7 +27,7 @@ function cartItemTemplate(item) {
       </p>
 
       <p class="cart-card__price">
-        $${item.FinalPrice.toFixed(2)}
+        $${Number(item.FinalPrice).toFixed(2)}
       </p>
     </li>
   `;
