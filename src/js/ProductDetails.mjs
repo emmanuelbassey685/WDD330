@@ -6,16 +6,26 @@ export default class ProductDetails {
     this.dataSource = dataSource;
     this.product = {};
   }
-  async init() {
-    this.product = await this.dataSource.findProductById(
-      this.productId
-    );
 
+  async init() {
+    this.product = await this.dataSource.findProductById(this.productId);
     this.renderProductDetails();
   }
 
   renderProductDetails() {
     const product = this.product;
+
+    // Calculate discount
+    const hasDiscount =
+      product.SuggestedRetailPrice > product.FinalPrice;
+
+    const discount = hasDiscount
+      ? Math.round(
+          ((product.SuggestedRetailPrice - product.FinalPrice) /
+            product.SuggestedRetailPrice) *
+            100
+        )
+      : 0;
 
     document.querySelector("title").textContent = product.Name;
 
@@ -33,8 +43,22 @@ export default class ProductDetails {
 
           <h1>${product.Name}</h1>
 
+          ${
+            hasDiscount
+              ? `
+              <span class="discount-badge">
+                ${discount}% OFF
+              </span>
+
+              <p class="original-price">
+                $${product.SuggestedRetailPrice.toFixed(2)}
+              </p>
+            `
+              : ""
+          }
+
           <p class="product-card__price">
-            $${product.FinalPrice}
+            $${product.FinalPrice.toFixed(2)}
           </p>
 
           <p class="product__color">
@@ -61,17 +85,12 @@ export default class ProductDetails {
       });
   }
 
-    addProductToCart() {
-      console.log("Button clicked");
-      console.log(this.product);
+  addProductToCart() {
+    let cart = getLocalStorage("so-cart") || [];
 
-      const cart = getLocalStorage("so-cart") || [];
+    cart.push(this.product);
 
-      cart.push(this.product);
-
-      setLocalStorage("so-cart", cart);
-
-      console.log(getLocalStorage("so-cart"));
+    setLocalStorage("so-cart", cart);
   }
 }
 
