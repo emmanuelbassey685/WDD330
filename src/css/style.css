@@ -320,6 +320,7 @@ button {
 }
 
 .discount-badge {
+  position: absolute;
   display: inline-block;
   background-color: #c62828;
   color: #fff;
@@ -328,13 +329,16 @@ button {
   font-size: 0.75rem;
   font-weight: bold;
   margin: 8px 0;
+  box-shadow: 0 4px 10px rgb(red, green, blue);
 }
 
 .original-price {
+  margin-top: .8rem;
+  margin-bottom: .2rem;
   color: #777;
   text-decoration: line-through;
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
 }
 
 .product-card__price {
@@ -386,34 +390,6 @@ button {
 
 .category-card:hover {
   transform: translateY(-5px);
-}
-
-/* ===============================
-   Discount Badge
-================================ */
-
-.discount-badge {
-  display: inline-block;
-  background: #d62828;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: .9rem;
-  font-weight: bold;
-  margin: .5rem 0;
-}
-
-.original-price {
-  color: #777;
-  text-decoration: line-through;
-  margin: .4rem 0;
-  font-size: 1rem;
-}
-
-.product-card__price {
-  color: #d62828;
-  font-size: 1.8rem;
-  font-weight: bold;
 }
 
 @media (max-width: 768px) {

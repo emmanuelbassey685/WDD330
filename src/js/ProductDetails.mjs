@@ -29,54 +29,60 @@ export default class ProductDetails {
 
     document.querySelector("title").textContent = product.Name;
 
-    document.querySelector("#product-detail").innerHTML = `
-      <section class="product-detail">
+   document.querySelector("#product-detail").innerHTML = `
+<section class="product-detail">
 
-        <img
-          src="${product.Images.PrimaryLarge}"
-          alt="${product.Name}"
-        />
+  <div class="product-detail__image">
 
-        <div class="product-detail__info">
+    ${
+      hasDiscount
+        ? `<span class="discount-flag">${discount}% OFF</span>`
+        : ""
+    }
 
-          <h2>${product.Brand.Name}</h2>
+    <img
+      src="${product.Images.PrimaryLarge}"
+      alt="${product.Name}"
+    />
 
-          <h1>${product.Name}</h1>
+  </div>
 
-          ${
-            hasDiscount
-              ? `
-              <span class="discount-badge">
-                ${discount}% OFF
-              </span>
+  <div class="product-detail__info">
 
-              <p class="original-price">
-                $${product.SuggestedRetailPrice.toFixed(2)}
-              </p>
-            `
-              : ""
-          }
+    <h2>${product.Brand.Name}</h2>
 
-          <p class="product-card__price">
-            $${product.FinalPrice.toFixed(2)}
-          </p>
+    <h1>${product.Name}</h1>
 
-          <p class="product__color">
-            ${product.Colors?.[0]?.ColorName ?? ""}
-          </p>
+    ${
+      hasDiscount
+        ? `
+        <p class="original-price">
+          $${product.SuggestedRetailPrice.toFixed(2)}
+        </p>
+      `
+        : ""
+    }
 
-          <p class="product__description">
-            ${product.DescriptionHtmlSimple}
-          </p>
+    <p class="product-card__price">
+      $${product.FinalPrice.toFixed(2)}
+    </p>
 
-          <button id="addToCart">
-            Add to Cart
-          </button>
+    <p class="product__color">
+      ${product.Colors?.[0]?.ColorName ?? ""}
+    </p>
 
-        </div>
+    <p class="product__description">
+      ${product.DescriptionHtmlSimple}
+    </p>
 
-      </section>
-    `;
+    <button id="addToCart">
+      Add to Cart
+    </button>
+
+  </div>
+
+</section>
+`;
 
     document
       .querySelector("#addToCart")
