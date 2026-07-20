@@ -359,7 +359,6 @@ button {
 /* ==========================
    Product Categories
 ========================== */
-
 .categories {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
