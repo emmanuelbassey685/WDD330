@@ -88,4 +88,18 @@ export default class ShoppingCart {
 
     this.addRemoveListeners();
   }
+
+  renderCartContents() {
+    const cartItems = getLocalStorage(this.key) || [];
+
+    renderListWithTemplate(
+      cartItemTemplate,
+      this.parentElement,
+      cartItems,
+      "afterbegin",
+      true
+    );
+
+    this.calculateCartTotal();
+  }
 }
