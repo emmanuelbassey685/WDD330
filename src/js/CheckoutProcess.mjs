@@ -1,102 +1,125 @@
 import { getLocalStorage } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 
-const services = new ExternalServices();
-
+/**
+ * Converts a form into a JSON object.
+ */
 function formDataToJSON(formElement) {
-  // convert the form data to a JSON object
   const formData = new FormData(formElement);
   const convertedJSON = {};
+
   formData.forEach((value, key) => {
     convertedJSON[key] = value;
   });
+
   return convertedJSON;
 }
 
+/**
+ * Converts cart items into the format expected by the server.
+ */
 function packageItems(items) {
-  const simplifiedItems = items.map((item) => {
-    console.log(item);
-    return {
-      id: item.Id,
-      price: item.FinalPrice,
-      name: item.Name,
-      quantity: 1,
-    };
-  });
-  return simplifiedItems;
+  return items.map((item) => ({
+    id: item.Id,
+    name: item.Name,
+    price: item.FinalPrice,
+    quantity: item.quantity || 1,
+  }));
 }
 
 export default class CheckoutProcess {
   constructor(key, outputSelector) {
     this.key = key;
     this.outputSelector = outputSelector;
+
     this.list = [];
+
     this.itemTotal = 0;
-    this.shipping = 0;
     this.tax = 0;
+    this.shipping = 0;
     this.orderTotal = 0;
+
+    this.services = new ExternalServices();
   }
 
   init() {
-    this.list = getLocalStorage(this.key);
-    this.calculateItemSummary();
+    this.list = getLocalStorage(this.key) || [];
+
+    this.calculateItemSubTotal();
   }
 
-  calculateItemSummary() {
-    // calculate and display the total amount of the items in the cart, and the number of items.
-    const summaryElement = document.querySelector(
-      this.outputSelector + " #cartTotal"
-    );
-    const itemNumElement = document.querySelector(
-      this.outputSelector + " #num-items"
-    );
-    itemNumElement.innerText = this.list.length;
-    // calculate the total of all the items in the cart
-    const amounts = this.list.map((item) => item.FinalPrice);
-    this.itemTotal = amounts.reduce((sum, item) => sum + item);
-    summaryElement.innerText = `$${this.itemTotal}`;;
+  calculateItemSubTotal() {
+    this.itemTotal = this.list.reduce((total, item) => {
+      return total + item.FinalPrice * (item.quantity || 1);
+    }, 0);
+
+    document.querySelector(
+      `${this.outputSelector} #subtotal`
+    ).textContent = `$${this.itemTotal.toFixed(2)}`;
   }
 
   calculateOrderTotal() {
-    // calculate the shipping and tax amounts. Then use them to along with the cart total to figure out the order total
-    this.tax = (this.itemTotal * .06);
-    this.shipping = 10 + (this.list.length - 1) * 2;
-    this.orderTotal = (
-      parseFloat(this.itemTotal) +
-      parseFloat(this.tax) +
-      parseFloat(this.shipping)
-    )
-    // display the totals.
+    this.tax = this.itemTotal * 0.06;
+
+    const itemCount = this.list.reduce((sum, item) => {
+      return sum + (item.quantity || 1);
+    }, 0);
+
+    this.shipping =
+      itemCount > 0
+        ? 10 + (itemCount - 1) * 2
+        : 0;
+
+    this.orderTotal =
+      this.itemTotal +
+      this.tax +
+      this.shipping;
+
     this.displayOrderTotals();
   }
 
   displayOrderTotals() {
-    // once the totals are all calculated display them in the order summary page
-    const tax = document.querySelector(`${this.outputSelector} #tax`);
-    const shipping = document.querySelector(`${this.outputSelector} #shipping`);
-    const orderTotal = document.querySelector(`${this.outputSelector} #orderTotal`);
+    document.querySelector(
+      `${this.outputSelector} #tax`
+    ).textContent = `$${this.tax.toFixed(2)}`;
 
-    tax.innerText = `$${this.tax.toFixed(2)}`;
-    shipping.innerText = `$${this.shipping.toFixed(2)}`;
-    orderTotal.innerText = `$${this.orderTotal.toFixed(2)}`;
+    document.querySelector(
+      `${this.outputSelector} #shipping`
+    ).textContent = `$${this.shipping.toFixed(2)}`;
+
+    document.querySelector(
+      `${this.outputSelector} #orderTotal`
+    ).textContent = `$${this.orderTotal.toFixed(2)}`;
   }
 
-  async checkout() {
-    const formElement = document.forms["checkout"];
-    const order = formDataToJSON(formElement);
-
-    order.orderDate = new Date().toISOString();
-    order.orderTotal = this.orderTotal;
-    order.tax = this.tax;
-    order.shipping = this.shipping;
-    order.items = packageItems(this.list);
-    //console.log(order);
+  async checkout(form) {
 
     try {
-      const response = await services.checkout(order);
-      console.log(response);
-    } catch (err) {
-      console.log(err);
+        const order = formDataToJSON(form);
+
+        // Add additional properties required by the server
+        order.orderDate = new Date().toISOString();
+        order.items = packageItems(this.list);
+        order.orderTotal = this.orderTotal.toFixed(2);
+        order.shipping = this.shipping;
+        order.tax = this.tax.toFixed(2);
+
+        const result = await this.services.checkout(order);
+
+        console.log(result);
+
+        // Clear cart
+        localStorage.removeItem(this.key);
+
+        alert("🎉 Thank you! Your order has been placed successfully.");
+
+        // Redirect back to the home page
+        window.location.href = "../index.html";
+
+    } catch (error) {
+        console.error(error);
+
+        alert("Checkout failed. Please verify your information and try again.");
     }
   }
 }

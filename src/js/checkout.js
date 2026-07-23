@@ -3,23 +3,30 @@ import CheckoutProcess from "./CheckoutProcess.mjs";
 
 loadHeaderFooter();
 
-const checkout = new CheckoutProcess("so-cart", "#order-summary");
-    checkout.init();
+const checkout = new CheckoutProcess(
+  "so-cart",
+  "#order-summary"
+);
 
-const zip = document.querySelector("input[name='zip']");
-    zip.addEventListener("blur", () => { checkout.calculateOrderTotal();
+checkout.init();
+
+const zip = document.querySelector("#zip");
+
+zip.addEventListener("blur", () => {
+  checkout.calculateOrderTotal();
 });
 
 const form = document.querySelector("#checkoutForm");
 
-    form.addEventListener("submit", async (e) => { e.preventDefault();
+form.addEventListener("submit", async (event) => {
 
-    if (!form.checkValidity()) {
-        form.reportValidity();
+  event.preventDefault();
 
-        return;
-    }
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
 
-    await checkout.checkout(form);
+  await checkout.checkout(form);
 
 });
