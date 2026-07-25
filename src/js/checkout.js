@@ -13,7 +13,9 @@ checkout.init();
 const zip = document.querySelector("#zip");
 
 zip.addEventListener("blur", () => {
+
   checkout.calculateOrderTotal();
+  
 });
 
 const form = document.querySelector("#checkoutForm");
