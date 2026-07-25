@@ -1,4 +1,4 @@
-import { getLocalStorage } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, alertMessage } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 
 /**
@@ -109,17 +109,31 @@ export default class CheckoutProcess {
         console.log(result);
 
         // Clear cart
-        localStorage.removeItem(this.key);
+        setLocalStorage(this.key, []);
 
         alert("🎉 Thank you! Your order has been placed successfully.");
 
         // Redirect back to the home page
-        window.location.href = "../index.html";
+        window.location.href = "/checkout/success.html";
 
-    } catch (error) {
-        console.error(error);
+    } 
+    
+        catch (error) {
+          console.error(error);
+          
+          if (error.name === "servicesError") {
+            let html = "<ul>";
 
-        alert("Checkout failed. Please verify your information and try again.");
+            Object.values(error.message).forEach((msg) => {
+              html += `<li>${msg}</li>`;
+            });
+
+            html += "</ul>";
+
+            alertMessage(html);
+          } else {
+            alertMessage("<p>Checkout failed. Please try again.</p>");
+          }
+        }
     }
-  }
 }
