@@ -62,6 +62,27 @@ export async function loadHeaderFooter() {
   renderWithTemplate(footerTemplate, footerElement);
 }
 
+export function addProductToCart(product) {
+
+  let cart = getLocalStorage("so-cart") || [];
+
+  const existing = cart.find(item => item.Id === product.Id);
+
+  if (existing) {
+
+    existing.quantity += 1;
+
+  } else {
+
+    product.quantity = 1;
+    cart.push(product);
+
+  }
+
+  setLocalStorage("so-cart", cart);
+
+}
+
 export function alertMessage(message, scroll = true) {
     const alert = document.createElement("div");
 

@@ -1,14 +1,12 @@
-import { getLocalStorage, setLocalStorage, renderListWithTemplate, } from "./utils.mjs";
+import {
+  getLocalStorage,
+  setLocalStorage,
+  renderListWithTemplate,
+} from "./utils.mjs";
 
 function cartItemTemplate(item) {
   return `
     <li class="cart-card divider">
-      <button
-        class="remove-item"
-        data-id="${item.Id}"
-        aria-label="Remove ${item.Name}">
-        &times;
-      </button>
 
       <a href="#" class="cart-card__image">
         <img src="${item.Images.PrimaryMedium}" alt="${item.Name}">
@@ -18,17 +16,30 @@ function cartItemTemplate(item) {
         <h2 class="card__name">${item.Name}</h2>
       </a>
 
-      <p class="cart-card__color">
-        ${item.Colors?.[0]?.ColorName ?? ""}
-      </p>
+      <p class="cart-card__color">${item.Colors[0].ColorName}</p>
 
-      <p class="cart-card__quantity">
-        Qty: 1
-      </p>
+      <div class="cart-card__quantity">
+        <label>Qty:</label>
+
+        <input
+          type="number"
+          class="cart-qty"
+          data-id="${item.Id}"
+          min="1"
+          value="${item.quantity || 1}"
+        />
+      </div>
 
       <p class="cart-card__price">
-        $${Number(item.FinalPrice).toFixed(2)}
+        $${(item.FinalPrice * (item.quantity || 1)).toFixed(2)}
       </p>
+
+      <button
+        class="remove-item"
+        data-id="${item.Id}">
+        Remove
+      </button>
+
     </li>
   `;
 }
@@ -43,10 +54,6 @@ export default class ShoppingCart {
     this.cartItems = getLocalStorage("so-cart") || [];
 
     this.renderCart();
-
-    this.calculateTotal();
-
-    this.addRemoveListeners();
   }
 
   renderCart() {
@@ -55,19 +62,55 @@ export default class ShoppingCart {
       this.listElement,
       this.cartItems
     );
+
+    this.calculateTotal();
+    this.attachQuantityListeners();
+    this.attachRemoveListeners();
   }
 
   calculateTotal() {
-    const total = this.cartItems.reduce(
-      (sum, item) => sum + item.FinalPrice,
-      0
-    );
+    const total = this.cartItems.reduce((sum, item) => {
+      return sum + item.FinalPrice * (item.quantity || 1);
+    }, 0);
 
-    document.querySelector(".cart-total").textContent =
-      `$${total.toFixed(2)}`;
+    const totalElement = document.querySelector("#cart-total");
+
+    if (totalElement) {
+      totalElement.textContent = `$${total.toFixed(2)}`;
+    }
   }
 
-  addRemoveListeners() {
+  attachQuantityListeners() {
+    document.querySelectorAll(".cart-qty").forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const id = e.target.dataset.id;
+        const quantity = Number(e.target.value);
+
+        this.updateQuantity(id, quantity);
+      });
+    });
+  }
+
+  updateQuantity(id, quantity) {
+    const item = this.cartItems.find(
+      (item) => String(item.Id) === String(id)
+    );
+
+    if (!item) return;
+
+    if (quantity <= 0) {
+      this.removeItem(id);
+      return;
+    }
+
+    item.quantity = quantity;
+
+    setLocalStorage("so-cart", this.cartItems);
+
+    this.renderCart();
+  }
+
+  attachRemoveListeners() {
     document.querySelectorAll(".remove-item").forEach((button) => {
       button.addEventListener("click", () => {
         this.removeItem(button.dataset.id);
@@ -77,29 +120,11 @@ export default class ShoppingCart {
 
   removeItem(id) {
     this.cartItems = this.cartItems.filter(
-      (item) => item.Id !== id
+      (item) => String(item.Id) !== String(id)
     );
 
     setLocalStorage("so-cart", this.cartItems);
 
     this.renderCart();
-
-    this.calculateTotal();
-
-    this.addRemoveListeners();
-  }
-
-  renderCartContents() {
-    const cartItems = getLocalStorage(this.key) || [];
-
-    renderListWithTemplate(
-      cartItemTemplate,
-      this.parentElement,
-      cartItems,
-      "afterbegin",
-      true
-    );
-
-    this.calculateCartTotal();
   }
 }

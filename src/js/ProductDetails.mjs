@@ -1,4 +1,4 @@
-import { getLocalStorage, setLocalStorage, alertMessage } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, addProductToCart, alertMessage } from "./utils.mjs";
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -28,11 +28,9 @@ export default class ProductDetails {
       : 0;
 
     document.querySelector("title").textContent = product.Name;
-
-   document.querySelector("#product-detail").innerHTML = `
-<section class="product-detail">
-
-  <div class="product-detail__image">
+    document.querySelector("#product-detail").innerHTML = `
+    <section class="product-detail">
+    <div class="product-detail__image">
 
     ${
       hasDiscount
@@ -92,11 +90,9 @@ export default class ProductDetails {
   }
 
   addProductToCart() {
-    let cart = getLocalStorage("so-cart") || [];
 
-    cart.push(this.product);
-    setLocalStorage("so-cart", cart);
-    alertMessage("<p>Product added to cart successfully!</p>", false);
+    addProductToCart(this.product);
+    alertMessage("Product added to cart successfully!", false);
   }
 }
 

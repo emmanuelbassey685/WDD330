@@ -646,6 +646,24 @@ button {
   background: #d98d2f;
 }
 
+.cart-card__quantity {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: .5rem 0;
+}
+
+.cart-qty {
+    width: 70px;
+    padding: .35rem;
+    text-align: center;
+}
+
+.cart-card__price {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
 @media (max-width:768px) {
   .categories{
       grid-template-columns:repeat(2,1fr);
